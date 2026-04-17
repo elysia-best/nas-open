@@ -10,7 +10,7 @@ Result<std::string> IscsiTarget::MapLun(const std::string& iqn, const std::strin
   if (!dry_run) {
     return Fail(ErrorCode::kPermissionDenied, "non dry-run mode is disabled in scaffold");
   }
-  return "targetcli /iscsi/" + iqn + " /tpg1/luns create " + lun;
+  return "targetcli /iscsi/" + iqn + "/tpg1/luns create " + lun;
 }
 
 }  // namespace nas::storage

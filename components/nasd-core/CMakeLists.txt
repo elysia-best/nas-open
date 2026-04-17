@@ -3,7 +3,7 @@ add_library(nasd-core STATIC
   src/server.cpp
 )
 
-add_library(nas::dcore ALIAS nasd-core)
+add_library(nas::daemon_core ALIAS nasd-core)
 
 target_compile_features(nasd-core PUBLIC cxx_std_23)
 
