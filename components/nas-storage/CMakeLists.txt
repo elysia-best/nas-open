@@ -25,4 +25,8 @@ if(BUILD_TESTING AND NAS_BUILD_TESTS)
   add_executable(nas-storage-extended-test tests/storage_extended_test.cpp)
   target_link_libraries(nas-storage-extended-test PRIVATE nas-storage)
   add_test(NAME nas-storage-extended-test COMMAND nas-storage-extended-test)
+
+  add_executable(nas-storage-partition-test tests/partition_manager_test.cpp)
+  target_link_libraries(nas-storage-partition-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-partition-test COMMAND nas-storage-partition-test)
 endif()
