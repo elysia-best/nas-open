@@ -1,7 +1,7 @@
 #include "nas/error.hpp"
 
 namespace nas {
-int nas_common_link_anchor() {
+int ensure_library_linkage() {
   return static_cast<int>(ErrorCode::kOk);
 }
 }  // namespace nas

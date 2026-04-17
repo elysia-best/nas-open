@@ -1,7 +1,7 @@
 syntax = "proto3";
 package nas.v1;
 
-message EmptyReq {}
+message EmptyRequest {}
 message ListPoolsReq {}
 message ListPoolsResp { repeated string pools = 1; }
 message CreateSnapshotReq { string dataset = 1; string snapshot = 2; }
@@ -20,5 +20,5 @@ service StorageService {
 
 service MonitorService {
   rpc GetSmartStatus(GetSmartReq) returns (SmartStatusResp);
-  rpc GenerateDiagnostic(EmptyReq) returns (stream LogChunk);
+  rpc GenerateDiagnostic(EmptyRequest) returns (stream LogChunk);
 }

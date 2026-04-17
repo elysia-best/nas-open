@@ -24,6 +24,8 @@ struct Error {
 };
 
 template <typename T>
+// Result<T> is the standard return type for fallible APIs in this project.
+// Use has_value()/value() on success and error() on failure.
 using Result = std::expected<T, Error>;
 
 inline Result<void> Ok() { return {}; }
