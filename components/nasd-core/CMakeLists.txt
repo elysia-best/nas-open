@@ -1,6 +1,7 @@
 add_library(nasd-core STATIC
   src/plugin_loader.cpp
   src/server.cpp
+  src/context_factory.cpp
 )
 
 add_library(nas::daemon_core ALIAS nasd-core)
@@ -20,4 +21,8 @@ if(BUILD_TESTING AND NAS_BUILD_TESTS)
   add_executable(nasd-core-plugin-loader-test tests/plugin_loader_test.cpp)
   target_link_libraries(nasd-core-plugin-loader-test PRIVATE nasd-core)
   add_test(NAME nasd-core-plugin-loader-test COMMAND nasd-core-plugin-loader-test)
+
+  add_executable(nasd-core-context-factory-test tests/context_factory_test.cpp)
+  target_link_libraries(nasd-core-context-factory-test PRIVATE nasd-core)
+  add_test(NAME nasd-core-context-factory-test COMMAND nasd-core-context-factory-test)
 endif()
