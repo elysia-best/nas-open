@@ -11,9 +11,9 @@ Implemented scaffolds:
 - `components/nas-gateway` (REST/auth/ws/rate-limit skeleton)
 - `components/nas-cli` (command routing + dry-run CLI skeleton)
 - `components/nas-web-ui` (Vite scaffold)
-- `components/nas-storage` (placeholder)
-- `components/nas-monitor` (placeholder)
-- `components/nas-installer` (placeholder)
+- `components/nas-storage` (dry-run storage plugin scaffold)
+- `components/nas-monitor` (monitoring plugin scaffold)
+- `components/nas-installer` (ISO/firstboot placeholder entry)
 - `proto/nas.proto` (shared gRPC contract)
 - `gateway/openapi.yaml` (REST mapping contract)
 
@@ -40,4 +40,11 @@ ctest --preset=debug-no-vcpkg
 cd components/nas-web-ui
 npm install
 npm run dev
+```
+
+## Integration placeholders
+
+```bash
+make test
+make iso
 ```
