@@ -1,0 +1,16 @@
+# Build artifacts
+/build/
+/Testing/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Ninja
+.ninja_deps
+.ninja_log
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
