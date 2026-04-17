@@ -21,4 +21,8 @@ if(BUILD_TESTING AND NAS_BUILD_TESTS)
   add_executable(nas-storage-dry-run-test tests/dry_run_test.cpp)
   target_link_libraries(nas-storage-dry-run-test PRIVATE nas-storage)
   add_test(NAME nas-storage-dry-run-test COMMAND nas-storage-dry-run-test)
+
+  add_executable(nas-storage-extended-test tests/storage_extended_test.cpp)
+  target_link_libraries(nas-storage-extended-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-extended-test COMMAND nas-storage-extended-test)
 endif()
