@@ -223,9 +223,23 @@ Result<PartitionEntry> PartitionManager::CreatePartition(
     if (!res.has_value()) return std::unexpected(res.error());
   }
 
-  // Derive partition device name (heuristic: append "1" for first partition).
+  // Derive partition device name heuristic: devices ending with a digit
+  // (e.g. nvme0n1) use "p1" suffix; others (e.g. sda) use "1".
+  // Note: this always returns partition number 1 as a dry-run/preview
+  // approximation.  In live mode the caller should use ListPartitions()
+  // after creation to discover the exact partition device assigned by the
+  // kernel.
   const std::string part_dev =
       device + (std::isdigit(static_cast<unsigned char>(device.back())) ? "p1" : "1");
+
+  // Guard against unreasonably large size_mib values before converting to
+  // bytes.  The maximum representable size in bytes for uint64_t is ~16 EiB;
+  // we cap at 16 PiB (reasonable upper bound for a single partition).
+  static constexpr std::uint64_t kMaxSizeMib = 16ULL * 1024 * 1024;  // 16 PiB in MiB
+  if (spec.size_mib > kMaxSizeMib) {
+    return Fail(ErrorCode::kInvalidArgument,
+                "size_mib exceeds maximum allowed value (16 PiB)");
+  }
 
   PartitionEntry entry;
   entry.number = 1;
@@ -233,7 +247,7 @@ Result<PartitionEntry> PartitionManager::CreatePartition(
   entry.type = "part";
   entry.fs_type = spec.fs_type;
   entry.label = spec.label;
-  entry.size_bytes = spec.size_mib * 1024 * 1024;
+  entry.size_bytes = spec.size_mib * 1024ULL * 1024ULL;
   return entry;
 }
 

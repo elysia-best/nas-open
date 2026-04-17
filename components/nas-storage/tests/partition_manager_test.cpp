@@ -76,7 +76,9 @@ int main() {
   spec_xfs.size_mib = 0;
   auto full_entry = pm.CreatePartition("/dev/sdc", spec_xfs, true);
   assert(full_entry.has_value());
-  assert(full_entry.value().size_bytes == 0);  // 0 MiB → 0 bytes
+  // size_mib == 0 means "use all remaining space" at runtime; in dry-run mode
+  // the returned size_bytes is 0 as a placeholder (not a real byte count).
+  assert(full_entry.value().size_bytes == 0);
 
   // CreatePartition – bad fs_type
   nas::storage::PartitionSpec bad_spec;
@@ -85,6 +87,14 @@ int main() {
   auto bad_part = pm.CreatePartition("/dev/sdb", bad_spec, true);
   assert(!bad_part.has_value());
   assert(bad_part.error().code == nas::ErrorCode::kInvalidArgument);
+
+  // CreatePartition – size_mib above 16 PiB cap
+  nas::storage::PartitionSpec huge_spec;
+  huge_spec.fs_type  = "ext4";
+  huge_spec.size_mib = 16ULL * 1024 * 1024 + 1;  // just above limit
+  auto huge_part = pm.CreatePartition("/dev/sdb", huge_spec, true);
+  assert(!huge_part.has_value());
+  assert(huge_part.error().code == nas::ErrorCode::kInvalidArgument);
 
   // CreatePartition – empty device
   assert(!pm.CreatePartition("", spec_ext4, true).has_value());
