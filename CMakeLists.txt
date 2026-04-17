@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.21)
+project(nas-open VERSION 0.1.0 LANGUAGES CXX)
+
+include(CTest)
+
+option(NAS_BUILD_TESTS "Build nas-open tests" ON)
+
+add_subdirectory(components/nas-common)

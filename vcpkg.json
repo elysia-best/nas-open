@@ -1,0 +1,6 @@
+{
+  "name": "nas-open",
+  "version-string": "0.1.0",
+  "description": "Componentized NAS management workspace",
+  "dependencies": []
+}

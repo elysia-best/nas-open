@@ -1,0 +1,5 @@
+# ninja log v7
+1	736	1776397083357867140	components/nas-common/CMakeFiles/nas-common.dir/src/nas_common.cpp.o	ad3e070498e9ad9a
+1	798	1776397083359067415	components/nas-common/CMakeFiles/nas-common-error-test.dir/tests/error_test.cpp.o	3b0b15c30800c17e
+736	5152	1776397084093803968	components/nas-common/libnas-common.a	7337780ef0c09882
+5152	5196	1776397088508868107	components/nas-common/nas-common-error-test	3bf675173768f692

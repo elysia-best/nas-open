@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "debug-no-vcpkg",
+      "displayName": "Debug (No vcpkg)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/debug-no-vcpkg",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "debug-no-vcpkg",
+      "configurePreset": "debug-no-vcpkg"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug-no-vcpkg",
+      "configurePreset": "debug-no-vcpkg",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

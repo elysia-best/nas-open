@@ -1,0 +1,24 @@
+syntax = "proto3";
+package nas.v1;
+
+message EmptyReq {}
+message ListPoolsReq {}
+message ListPoolsResp { repeated string pools = 1; }
+message CreateSnapshotReq { string dataset = 1; string snapshot = 2; }
+message OperationResp { bool ok = 1; string message = 2; }
+message SyncDatasetReq { string dataset = 1; string target = 2; }
+message ProgressUpdate { uint32 percent = 1; string detail = 2; }
+message GetSmartReq { string device = 1; }
+message SmartStatusResp { string health = 1; }
+message LogChunk { bytes data = 1; }
+
+service StorageService {
+  rpc ListPools(ListPoolsReq) returns (ListPoolsResp);
+  rpc CreateSnapshot(CreateSnapshotReq) returns (OperationResp);
+  rpc SyncDataset(SyncDatasetReq) returns (stream ProgressUpdate);
+}
+
+service MonitorService {
+  rpc GetSmartStatus(GetSmartReq) returns (SmartStatusResp);
+  rpc GenerateDiagnostic(EmptyReq) returns (stream LogChunk);
+}

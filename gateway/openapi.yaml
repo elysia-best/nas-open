@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: NAS Gateway API
+  version: 0.1.0
+paths:
+  /api/v1/storage/pools:
+    get:
+      summary: List pools
+      operationId: ListPools
+      responses:
+        '200':
+          description: OK
+  /api/v1/storage/snapshots:
+    post:
+      summary: Create snapshot
+      operationId: CreateSnapshot
+      responses:
+        '200':
+          description: OK
