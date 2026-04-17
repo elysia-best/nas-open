@@ -10,7 +10,7 @@ Result<std::string> App::Run(const std::vector<std::string>& args) const {
   if (!parsed.has_value()) {
     return std::unexpected(parsed.error());
   }
-  return router.FormatDryRun(parsed.value());
+  return router.Execute(parsed.value());
 }
 
 }  // namespace nas::cli

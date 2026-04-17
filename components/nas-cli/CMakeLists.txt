@@ -13,7 +13,7 @@ target_include_directories(nas-cli-lib
     $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(nas-cli-lib PUBLIC nas-common)
+target_link_libraries(nas-cli-lib PUBLIC nas-common nas-monitor nas-storage)
 
 add_executable(nas-cli src/main.cpp)
 target_link_libraries(nas-cli PRIVATE nas-cli-lib readline)

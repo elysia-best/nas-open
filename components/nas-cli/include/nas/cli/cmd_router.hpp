@@ -18,6 +18,7 @@ class CommandRouter {
  public:
   [[nodiscard]] Result<Command> Parse(const std::vector<std::string>& argv) const;
   [[nodiscard]] Result<std::string> FormatDryRun(const Command& cmd) const;
+  [[nodiscard]] Result<std::string> Execute(const Command& cmd) const;
 };
 
 }  // namespace nas::cli
