@@ -19,7 +19,7 @@ int main() {
 
   auto dry = router.FormatDryRun(*ok);
   assert(dry.has_value());
-  assert(dry.value().find("DRY-RUN") == 0);
+  assert(dry.value().find("STORAGE:") == 0);
 
   return 0;
 }

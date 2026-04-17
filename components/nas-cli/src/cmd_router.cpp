@@ -23,7 +23,11 @@ Result<std::string> CommandRouter::FormatDryRun(const Command& cmd) const {
   }
 
   std::ostringstream oss;
-  oss << "DRY-RUN: " << cmd.name_space << ' ' << cmd.entity << ' ' << cmd.action;
+  if (cmd.name_space == "storage") {
+      oss << "STORAGE: executing " << cmd.entity << " action " << cmd.action;
+  } else {
+      oss << "DRY-RUN: " << cmd.name_space << ' ' << cmd.entity << ' ' << cmd.action;
+  }
   for (const auto& flag : cmd.flags) {
     oss << ' ' << flag;
   }

@@ -3,6 +3,10 @@ add_library(nas-storage STATIC
   src/zfs_pool.cpp
   src/iscsi_target.cpp
   src/share_config.cpp
+  src/zfs_be.cpp
+  src/nfs_acl.cpp
+  src/nfs_export.cpp
+  src/zfs_snapshot.cpp
 )
 
 add_library(nas::storage ALIAS nas-storage)
@@ -41,4 +45,20 @@ if(BUILD_TESTING AND NAS_BUILD_TESTS)
   add_executable(nas-storage-share-config-test tests/share_config_test.cpp)
   target_link_libraries(nas-storage-share-config-test PRIVATE nas-storage)
   add_test(NAME nas-storage-share-config-test COMMAND nas-storage-share-config-test)
+
+  add_executable(nas-storage-zfs-be-test tests/zfs_be_test.cpp)
+  target_link_libraries(nas-storage-zfs-be-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-zfs-be-test COMMAND nas-storage-zfs-be-test)
+
+  add_executable(nas-storage-zfs-snapshot-test tests/zfs_snapshot_test.cpp)
+  target_link_libraries(nas-storage-zfs-snapshot-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-zfs-snapshot-test COMMAND nas-storage-zfs-snapshot-test)
+
+  add_executable(nas-storage-nfs-acl-test tests/nfs_acl_test.cpp)
+  target_link_libraries(nas-storage-nfs-acl-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-nfs-acl-test COMMAND nas-storage-nfs-acl-test)
+
+  add_executable(nas-storage-nfs-export-test tests/nfs_export_test.cpp)
+  target_link_libraries(nas-storage-nfs-export-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-nfs-export-test COMMAND nas-storage-nfs-export-test)
 endif()

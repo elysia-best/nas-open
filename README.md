@@ -42,6 +42,22 @@ npm install
 npm run dev
 ```
 
+## Interactive CLI
+
+The `nas-cli` offers both one-shot commands and an interactive shell using GNU readline.
+The shell supports command history and basic parsing equivalent to shell tokenization.
+
+```bash
+# Non-interactive mode
+nas-cli storage pool list --json
+
+# Interactive mode
+nas-cli
+nas-cli > help
+nas-cli > storage snapshot create pool/dataset@snap1
+nas-cli > quit
+```
+
 ## Integration placeholders
 
 ```bash

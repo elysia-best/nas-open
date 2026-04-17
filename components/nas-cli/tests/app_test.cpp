@@ -11,8 +11,7 @@ int main() {
   auto ok = app.Run({"storage", "pool", "list", "--json"});
   assert(ok.has_value());
   const auto& out = ok.value();
-  assert(out.find("DRY-RUN") == 0);
-  assert(out.find("storage") != std::string::npos);
+  assert(out.find("STORAGE:") == 0);
   assert(out.find("pool") != std::string::npos);
   assert(out.find("list") != std::string::npos);
   assert(out.find("--json") != std::string::npos);
