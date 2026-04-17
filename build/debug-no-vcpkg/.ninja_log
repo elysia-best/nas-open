@@ -1,5 +1,0 @@
-# ninja log v7
-1	252	1776397103615865094	components/nas-common/CMakeFiles/nas-common.dir/src/nas_common.cpp.o	ad3e070498e9ad9a
-2	311	1776397103616865093	components/nas-common/CMakeFiles/nas-common-error-test.dir/tests/error_test.cpp.o	3b0b15c30800c17e
-252	332	1776397103867380153	components/nas-common/libnas-common.a	7337780ef0c09882
-332	381	1776397103946864993	components/nas-common/nas-common-error-test	3bf675173768f692
