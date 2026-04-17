@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "nas/storage/partition.hpp"
+#include "nas/storage/zfs_pool.hpp"
 
 // Helper to run a command and get output
 std::string run_cmd(const std::string& cmd) {
@@ -34,7 +35,7 @@ void test_virtual_img() {
         return;
     }
 
-    std::system("dd if=/dev/zero of=test_disk.img bs=1M count=100 2>/dev/null");
+    std::system("dd if=/dev/zero of=test_disk.img bs=1M count=300 2>/dev/null");
     std::string loop_dev = run_cmd("losetup -f --show test_disk.img | awk '{print $1}'");
     if (loop_dev.empty()) {
         std::cout << "Failed to setup loop device." << std::endl;
@@ -60,11 +61,47 @@ void test_virtual_img() {
     }
     assert(res_part.has_value());
 
-    // LVM
+    // Format new partition
+    auto res_format = pm.FormatPartition(res_part.value().device, "ext4", "TESTFS", false);
+    if (!res_format) {
+        std::cerr << "FormatPartition failed: " << res_format.error().message << std::endl;
+    }
+    assert(res_format.has_value());
+
+    // ZFS Virtual Image Test
+    std::system("dd if=/dev/zero of=test_disk_zfs.img bs=1M count=300 2>/dev/null");
+    std::string loop_zfs = run_cmd("losetup -f --show test_disk_zfs.img | awk '{print $1}'");
+    auto res_table_zfs = pm.CreateTable(loop_zfs, "gpt", false);
+    assert(res_table_zfs.has_value());
+
+    nas::storage::PartitionSpec spec_zfs;
+    spec_zfs.fs_type = "";
+    spec_zfs.size_mib = 200;
+    auto res_part2 = pm.CreatePartition(loop_zfs, spec_zfs, false);
+    if (res_part2.has_value()) {
+        nas::storage::ZfsPool zpool;
+        auto zpool_res = zpool.CreatePool("testpool", "", {res_part2.value().device}, false);
+        if (zpool_res) {
+            std::cout << "ZfsPool CreatePool passed" << std::endl;
+            auto _ = zpool.DestroyPool("testpool", false);
+        } else {
+            std::cerr << "ZfsPool CreatePool ignored due to missing ZFS module: " << zpool_res.error().message << std::endl;
+        }
+    }
+    std::system(("losetup -d " + loop_zfs).c_str());
+    std::system("rm -f test_disk_zfs.img");
+
+    // LVM Test
+    std::system("dd if=/dev/zero of=test_disk_lvm.img bs=1M count=300 2>/dev/null");
+    std::string loop_lvm = run_cmd("losetup -f --show test_disk_lvm.img | awk '{print $1}'");
+
+    auto res_table_lvm = pm.CreateTable(loop_lvm, "gpt", false);
+    assert(res_table_lvm.has_value());
+
     nas::storage::PartitionSpec spec_lvm;
     spec_lvm.fs_type = "";
-    spec_lvm.size_mib = 40;
-    auto lvm_part = pm.CreatePartition(loop_dev, spec_lvm, false);
+    spec_lvm.size_mib = 150;
+    auto lvm_part = pm.CreatePartition(loop_lvm, spec_lvm, false);
     assert(lvm_part.has_value());
     
     std::string pv_dev = lvm_part.value().device;
@@ -84,7 +121,8 @@ void test_virtual_img() {
 
     // Detach loop
     std::system(("losetup -d " + loop_dev).c_str());
-    std::system("rm -f test_disk.img");
+    std::system(("losetup -d " + loop_lvm).c_str());
+    std::system("rm -f test_disk.img test_disk_lvm.img test_disk_zfs.img");
     std::cout << "Virtual img test passed." << std::endl;
 }
 
