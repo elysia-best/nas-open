@@ -6,3 +6,6 @@ include(CTest)
 option(NAS_BUILD_TESTS "Build nas-open tests" ON)
 
 add_subdirectory(components/nas-common)
+add_subdirectory(components/nasd-core)
+add_subdirectory(components/nas-gateway)
+add_subdirectory(components/nas-cli)
