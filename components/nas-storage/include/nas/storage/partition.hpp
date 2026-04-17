@@ -82,6 +82,22 @@ class PartitionManager {
   // Unmount a mounted filesystem by mountpoint or device path.
   [[nodiscard]] Result<void> Unmount(
       const std::string& mountpoint, bool dry_run) const;
+
+  // -----------------------------------------------------------------------
+  // LVM Operations
+  // -----------------------------------------------------------------------
+  // Create an LVM Physical Volume
+  [[nodiscard]] Result<void> CreatePhysicalVolume(
+      const std::string& device, bool dry_run) const;
+
+  // Create an LVM Volume Group
+  [[nodiscard]] Result<void> CreateVolumeGroup(
+      const std::string& vg_name, const std::vector<std::string>& pvs, bool dry_run) const;
+
+  // Create an LVM Logical Volume
+  [[nodiscard]] Result<void> CreateLogicalVolume(
+      const std::string& vg_name, const std::string& lv_name, std::uint64_t size_mib, bool dry_run) const;
+
 };
 
 }  // namespace nas::storage

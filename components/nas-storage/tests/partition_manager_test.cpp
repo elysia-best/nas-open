@@ -1,8 +1,92 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <unistd.h>
 
 #include "nas/storage/partition.hpp"
+
+// Helper to run a command and get output
+std::string run_cmd(const std::string& cmd) {
+    char buffer[128];
+    std::string result = "";
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) throw std::runtime_error("popen() failed!");
+    try {
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            result += buffer;
+        }
+    } catch (...) {
+        pclose(pipe);
+        throw;
+    }
+    pclose(pipe);
+    if (!result.empty() && result.back() == '\n') result.pop_back();
+    return result;
+}
+
+void test_virtual_img() {
+    std::cout << "Running virtual img test (requires root for losetup, skipped if not root)..." << std::endl;
+    if (geteuid() != 0) {
+        std::cout << "Not running as root, skipping virtual img test." << std::endl;
+        return;
+    }
+
+    std::system("dd if=/dev/zero of=test_disk.img bs=1M count=100 2>/dev/null");
+    std::string loop_dev = run_cmd("losetup -f --show test_disk.img | awk '{print $1}'");
+    if (loop_dev.empty()) {
+        std::cout << "Failed to setup loop device." << std::endl;
+        return;
+    }
+
+    nas::storage::PartitionManager pm;
+    
+    // Create Table
+    auto res_table = pm.CreateTable(loop_dev, "gpt", false);
+    if (!res_table) {
+        std::cerr << "CreateTable failed: " << res_table.error().message << std::endl;
+    }
+    assert(res_table.has_value());
+
+    // Create Partition
+    nas::storage::PartitionSpec spec;
+    spec.fs_type = "ext4";
+    spec.size_mib = 50;
+    auto res_part = pm.CreatePartition(loop_dev, spec, false);
+    if (!res_part) {
+        std::cerr << "CreatePartition failed: " << res_part.error().message << std::endl;
+    }
+    assert(res_part.has_value());
+
+    // LVM
+    nas::storage::PartitionSpec spec_lvm;
+    spec_lvm.fs_type = "";
+    spec_lvm.size_mib = 40;
+    auto lvm_part = pm.CreatePartition(loop_dev, spec_lvm, false);
+    assert(lvm_part.has_value());
+    
+    std::string pv_dev = lvm_part.value().device;
+    auto res_pv = pm.CreatePhysicalVolume(pv_dev, false);
+    assert(res_pv.has_value());
+
+    auto res_vg = pm.CreateVolumeGroup("test_vg", {pv_dev}, false);
+    assert(res_vg.has_value());
+
+    auto res_lv = pm.CreateLogicalVolume("test_vg", "test_lv", 20, false);
+    assert(res_lv.has_value());
+
+    // Cleanup LVM
+    std::system("lvremove -y test_vg/test_lv >/dev/null 2>&1");
+    std::system("vgremove -y test_vg >/dev/null 2>&1");
+    std::system(("pvremove -y -ff " + pv_dev + " >/dev/null 2>&1").c_str());
+
+    // Detach loop
+    std::system(("losetup -d " + loop_dev).c_str());
+    std::system("rm -f test_disk.img");
+    std::cout << "Virtual img test passed." << std::endl;
+}
 
 int main() {
   nas::storage::PartitionManager pm;
@@ -175,6 +259,19 @@ int main() {
   auto bad_um = pm.Unmount("", true);
   assert(!bad_um.has_value());
   assert(bad_um.error().code == nas::ErrorCode::kInvalidArgument);
+
+  // LVM – dry_run
+  assert(pm.CreatePhysicalVolume("/dev/sdb1", true).has_value());
+  assert(pm.CreateVolumeGroup("test_vg", {"/dev/sdb1"}, true).has_value());
+  assert(pm.CreateLogicalVolume("test_vg", "test_lv", 1024, true).has_value());
+
+  // LVM - empty args
+  auto bad_vg = pm.CreateVolumeGroup("", {"/dev/sdb1"}, true);
+  assert(!bad_vg.has_value());
+  auto bad_lv = pm.CreateLogicalVolume("test_vg", "", 1024, true);
+  assert(!bad_lv.has_value());
+  
+  test_virtual_img();
 
   return 0;
 }

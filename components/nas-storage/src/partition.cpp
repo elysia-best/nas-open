@@ -302,4 +302,52 @@ Result<void> PartitionManager::Unmount(
   return Ok();
 }
 
+Result<void> PartitionManager::CreatePhysicalVolume(
+    const std::string& device, bool dry_run) const {
+  auto v = ValidateDevicePath(device);
+  if (!v) return std::unexpected(v.error());
+
+  const std::string cmd = "pvcreate -y -ff " + device;
+  if (!dry_run) {
+    auto res = RunCommand(cmd);
+    if (!res.has_value()) return std::unexpected(res.error());
+  }
+  return Ok();
+}
+
+Result<void> PartitionManager::CreateVolumeGroup(
+    const std::string& vg_name, const std::vector<std::string>& pvs, bool dry_run) const {
+  if (vg_name.empty() || pvs.empty()) {
+    return Fail(ErrorCode::kInvalidArgument, "invalid vg_name or empty pv list");
+  }
+  std::ostringstream cmd;
+  cmd << "vgcreate -y " << vg_name;
+  for (const auto& pv : pvs) {
+    cmd << " " << pv;
+  }
+  if (!dry_run) {
+    auto res = RunCommand(cmd.str());
+    if (!res.has_value()) return std::unexpected(res.error());
+  }
+  return Ok();
+}
+
+Result<void> PartitionManager::CreateLogicalVolume(
+    const std::string& vg_name, const std::string& lv_name, std::uint64_t size_mib, bool dry_run) const {
+  if (vg_name.empty() || lv_name.empty()) {
+    return Fail(ErrorCode::kInvalidArgument, "invalid vg_name or lv_name");
+  }
+  std::ostringstream cmd;
+  if (size_mib == 0) {
+      cmd << "lvcreate -y -l 100%FREE -n " << lv_name << " " << vg_name;
+  } else {
+      cmd << "lvcreate -y -L " << size_mib << "M -n " << lv_name << " " << vg_name;
+  }
+  if (!dry_run) {
+    auto res = RunCommand(cmd.str());
+    if (!res.has_value()) return std::unexpected(res.error());
+  }
+  return Ok();
+}
+
 }  // namespace nas::storage
