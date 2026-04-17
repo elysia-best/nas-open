@@ -1,40 +1,12 @@
 #include "nas/storage/partition.hpp"
 
-#include <array>
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
 #include <sstream>
+
+#include "run_command.hpp"
 
 namespace nas::storage {
 
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
-
-// Run a shell command and capture stdout.  Returns the captured output on
-// success (exit-status 0) or an Error on failure.
-static Result<std::string> RunCommand(const std::string& cmd) {
-  // NOLINTNEXTLINE(cert-env33-c)
-  std::FILE* pipe = ::popen(cmd.c_str(), "r");
-  if (!pipe) {
-    return Fail(ErrorCode::kInternal,
-                std::string("popen failed: ") + std::strerror(errno));
-  }
-
-  std::string output;
-  std::array<char, 256> buf{};
-  while (std::fgets(buf.data(), static_cast<int>(buf.size()), pipe) != nullptr) {
-    output += buf.data();
-  }
-
-  int status = ::pclose(pipe);
-  if (status != 0) {
-    return Fail(ErrorCode::kInternal,
-                "command failed (exit " + std::to_string(status) + "): " + cmd);
-  }
-  return output;
-}
+using detail::RunCommand;
 
 // Validate a block device path: must be non-empty and start with '/'.
 static Result<void> ValidateDevicePath(const std::string& device) {

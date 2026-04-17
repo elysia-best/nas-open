@@ -29,4 +29,16 @@ if(BUILD_TESTING AND NAS_BUILD_TESTS)
   add_executable(nas-storage-partition-test tests/partition_manager_test.cpp)
   target_link_libraries(nas-storage-partition-test PRIVATE nas-storage)
   add_test(NAME nas-storage-partition-test COMMAND nas-storage-partition-test)
+
+  add_executable(nas-storage-zfs-pool-test tests/zfs_pool_test.cpp)
+  target_link_libraries(nas-storage-zfs-pool-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-zfs-pool-test COMMAND nas-storage-zfs-pool-test)
+
+  add_executable(nas-storage-iscsi-target-test tests/iscsi_target_test.cpp)
+  target_link_libraries(nas-storage-iscsi-target-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-iscsi-target-test COMMAND nas-storage-iscsi-target-test)
+
+  add_executable(nas-storage-share-config-test tests/share_config_test.cpp)
+  target_link_libraries(nas-storage-share-config-test PRIVATE nas-storage)
+  add_test(NAME nas-storage-share-config-test COMMAND nas-storage-share-config-test)
 endif()

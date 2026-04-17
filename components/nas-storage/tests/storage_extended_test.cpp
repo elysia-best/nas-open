@@ -13,7 +13,7 @@ int main() {
   assert(zfs.Snapshot("tank", "", true).error().code == nas::ErrorCode::kInvalidArgument);
   assert(zfs.Snapshot("", "snap1", true).error().code == nas::ErrorCode::kInvalidArgument);
 
-  // dry_run=false must fail
+  // live mode fails because zfs/zpool are not installed in the sandbox
   assert(!zfs.ListDatasets(false).has_value());
   assert(!zfs.Snapshot("tank", "snap1", false).has_value());
 
@@ -39,10 +39,19 @@ int main() {
   assert(nfs.has_value());
   assert(nfs.value().find("/mnt/data") != std::string::npos);
 
+  // Render methods now work in both modes (pure text generation, no I/O)
+  auto nfs_live = share.RenderNfsExports("/mnt/data", false);
+  assert(nfs_live.has_value());
+  assert(nfs_live.value() == nfs.value());
+
   auto smb = share.RenderSambaConfig("PublicShare", true);
   assert(smb.has_value());
   assert(smb.value().find("PublicShare") != std::string::npos);
   assert(smb.value().find("browseable") != std::string::npos);
+
+  auto smb_live = share.RenderSambaConfig("PublicShare", false);
+  assert(smb_live.has_value());
+  assert(smb_live.value() == smb.value());
 
   // PartitionManager
   nas::storage::PartitionManager pm;
