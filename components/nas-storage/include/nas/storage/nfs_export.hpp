@@ -13,9 +13,9 @@ struct NfsExportConfig {
 
 class NfsExportManager {
 public:
-    std::expected<void, std::string> add_export(const NfsExportConfig& config);
-    std::expected<void, std::string> remove_export(const std::string& path);
-    std::expected<void, std::string> reload_exports();
+    std::expected<void, std::string> add_export(const NfsExportConfig& config, bool dry_run = false);
+    std::expected<void, std::string> remove_export(const std::string& path, bool dry_run = false);
+    std::expected<void, std::string> reload_exports(bool dry_run = false);
 };
 
 } // namespace nas::storage

@@ -5,9 +5,9 @@ using namespace nas::storage;
 
 int main() {
     NfsAclManager manager;
-    auto set_res = manager.set_acl("/tmp/test", "A::OWNER@:rwaDxtTnNcCy");
+    auto set_res = manager.set_acl("/tmp/test", "A::OWNER@:rwaDxtTnNcCy", true);
     assert(set_res.has_value());
-    auto get_res = manager.get_acl("/tmp/test");
+    auto get_res = manager.get_acl("/tmp/test", true);
     assert(get_res.has_value());
     return 0;
 }

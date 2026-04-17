@@ -13,9 +13,9 @@ struct BootEnvironment {
 
 class ZfsBEManager {
 public:
-    std::expected<void, std::string> create_be(const std::string& name);
-    std::expected<void, std::string> activate_be(const std::string& name);
-    std::expected<std::vector<BootEnvironment>, std::string> list_bes();
+    std::expected<void, std::string> create_be(const std::string& name, bool dry_run = false);
+    std::expected<void, std::string> activate_be(const std::string& name, bool dry_run = false);
+    std::expected<std::vector<BootEnvironment>, std::string> list_bes(bool dry_run = false);
 };
 
 } // namespace nas::storage
